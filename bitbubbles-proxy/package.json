@@ -1,4 +1,4 @@
-﻿{
+{
   "name": "bitbubbles-proxy",
   "version": "1.0.0",
   "description": "Proxy com cache para a API CoinGecko",
@@ -9,6 +9,6 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.18.2",
-    "node-fetch": "^2.6.7" 
+    "axios": "^1.6.8"  <-- TROQUE node-fetch por AXIOS
   }
 }
