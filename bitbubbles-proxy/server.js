@@ -1,5 +1,5 @@
 const express = require('express');
-const axios = require('axios'); // Usando axios para fetch
+const axios = require('axios'); 
 const cors = require('cors'); 
 
 const app = express();
@@ -61,10 +61,5 @@ app.get('/', (req, res) => {
 });
 
 
-// Mude AQUI: Removemos a variável PORT e a URL localhost, que causam conflito no Vercel.
-app.listen(3000, () => {
-    console.log('Proxy rodando e pronto para receber requisições do Vercel.');
-});
-
-// Exporta o aplicativo para o Vercel Serverless
+// EXPORTAÇÃO NECESSÁRIA PARA O VERVEL SER RECONHECER O EXPRESS
 module.exports = app;
