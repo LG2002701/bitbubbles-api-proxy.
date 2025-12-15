@@ -1,9 +1,8 @@
-﻿const express = require('express');
-const fetch = require('node-fetch'); // Usamos 'node-fetch' para máxima compatibilidade
+const express = require('express');
+const axios = require('axios'); // Usando axios para fetch
 const cors = require('cors'); 
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Configuração CORS: Permite o acesso do seu front-end na Hostinger
 app.use(cors());
@@ -32,19 +31,8 @@ app.get('/api/coins', async (req, res) => {
     // 2. Cache Miss: Buscar novos dados
     console.log('Cache miss: Buscando novos dados da CoinGecko...');
     try {
-        const response = await fetch(COINGECKO_URL);
-        
-        if (!response.ok) {
-            // Se o CoinGecko falhar (ex: 403), tentamos retornar o cache antigo
-            if (cachedData) {
-                console.warn(`CoinGecko falhou (${response.status}). Retornando dados antigos do cache.`);
-                return res.status(200).json(cachedData);
-            }
-            // Se não houver cache, falha
-            return res.status(response.status).json({ error: 'Falha ao buscar CoinGecko e cache vazio.' });
-        }
-        
-        const data = await response.json();
+        const response = await axios.get(COINGECKO_URL);
+        const data = response.data; // Axios retorna os dados em .data
 
         // 3. Atualizar Cache e Timestamp
         cachedData = data;
@@ -58,11 +46,12 @@ app.get('/api/coins', async (req, res) => {
         
         // Em caso de erro de rede, fallback para cache antigo
         if (cachedData) {
-            console.warn('Erro de rede. Retornando dados antigos do cache.');
+            console.warn('Erro na busca da API. Retornando dados antigos do cache.');
             return res.status(200).json(cachedData);
         }
         
-        res.status(500).json({ error: 'Erro interno ao processar a requisição.' });
+        // Se não houver cache, falha
+        res.status(500).json({ error: 'Falha ao buscar CoinGecko e cache vazio.' });
     }
 });
 
@@ -72,6 +61,10 @@ app.get('/', (req, res) => {
 });
 
 
-app.listen(PORT, () => {
-    console.log(`Proxy rodando em http://localhost:${PORT}`);
+// Mude AQUI: Removemos a variável PORT e a URL localhost, que causam conflito no Vercel.
+app.listen(3000, () => {
+    console.log('Proxy rodando e pronto para receber requisições do Vercel.');
 });
+
+// Exporta o aplicativo para o Vercel Serverless
+module.exports = app;
